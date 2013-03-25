@@ -21,7 +21,8 @@ class Mite
         group_by: groupBy
         api_key: @apiKey
       (error, result) ->
-        result         
+      hier ist der bug!  # Session.set ('result',result)
+
 
 
 if Meteor.isClient
@@ -30,7 +31,11 @@ if Meteor.isClient
     "Welcome to zyt"
 
   Template.hello.years = ->
-    years = Mite.getTotalTime ("year")
+    Mite.getTotalTime ("year")
+    
+  Template.hello.meep = ->
+    bla = Mite.getTotalTime ("year")
+    
 
   Template.hello.events "click input": ->
     
