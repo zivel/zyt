@@ -3,19 +3,46 @@
 </head>
 
 <body>
-  {{> hello}}
+    {{> body}}
 </body>
-<hr>
-<template name="hello">
-  <h1>Hello World!</h1>
-  {{greeting}}
 
-  <div class="years">
-    {{years}}
-    {{meep}}
-    {{#each years}}
-      {{> year}}
-    {{/each}}
-  </div>
-  <input type="button" value="Click" />
+<template name="body">
+  {{#if key}}
+    {{> mite}}
+  {{else}}
+    {{> settings}}
+  {{/if}}
 </template>
+
+<template name="settings">
+  <h1>The settings</h1>
+  {{key}}
+  <form class="form-inline">
+    <fieldset>
+      <label>
+        Mite API-Key:
+      </label>
+      <input id='apiKey' type='text' name='apiKey' placeholder='your API-Key' value=''>
+      <label>
+        Mite Host (the part before mite.yo.lk):
+      </label>
+      <input id='miteHost' type='text' name='miteHost' placeholder='your Mite Host' value=''>
+      
+      <button id='saveSettings' type='submit' class='btn'>save</button>
+    </fieldset>
+  </form>
+</template>
+
+<template name="mite">
+  <div>
+    <h3>Mite Zyt Rächnig</h3>
+    <small>
+      <a id="optout" href="#">not {{user.name}} ({{user.email}})?</a>
+    </small>
+  </div>
+</template>
+
+<template name="calendar">
+
+</template>
+

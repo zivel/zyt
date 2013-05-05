@@ -1,61 +1,70 @@
-class Mite
-  constructor: ->
-    console.log 'building up...'
-    @apiKey = @constructor.ask4key()
-    
-  @host = "https://interaction-enabling.mite.yo.lk"
-
-  @ask4key: ->
-    #TODO: read key from cookie ask for key save key
-    if !@apiKey
-      @apiKey = "f853eed9533860a"
-    else
-      console.log "key is #{@apiKey}"
-
-  getTimeFor: (day) ->
-    #TODO
-  @getTotalTime: (groupBy) ->
-    Meteor.call "fetchTime", 
-      "#{@host}/time_entries.json",
-      params:
-        group_by: groupBy
-        api_key: @apiKey
-      (error, result) ->
-      hier ist der bug!  # Session.set ('result',result)
-
-
-
 if Meteor.isClient
-  mite = new Mite
-  Template.hello.greeting = ->
-    "Welcome to zyt"
-
-  Template.hello.years = ->
-    Mite.getTotalTime ("year")
-    
-  Template.hello.meep = ->
-    bla = Mite.getTotalTime ("year")
-    
-
-  Template.hello.events "click input": ->
-    
-    # template data, if any, is available in 'this'
-    console.log "You pressed the button"  if typeof console isnt "undefined"
-
-if Meteor.isServer
-  Meteor.methods fetchTime: (url, params) ->
-    url = url
   
-    #synchronous GET
-    result = Meteor.http.get(url,params)
-    if result.statusCode is 200
-      respJson = JSON.parse(result.content)
-      console.log "response received."
-      respJson
-    else
-      console.log "Response issue: ", result.statusCode
-      errorJson = JSON.parse(result.content)
-      throw new Meteor.Error(result.statusCode, errorJson.error)
+  saveSettings = (host, key, user) ->
+    localStorage['apiKey'] = key
+    localStorage['miteHost'] = host
+    localStorage['user'] = JSON.stringify user   
+    Session.set 'key', key
+
+  clearSettings = ->
+    localStorage.removeItem 'apiKey'
+    localStorage.removeItem 'miteHost'
+    localStorage.removeItem 'user'
+    Session.set 'key', undefined
+  
+  easterSunday = (year = (new Date).getFullYear()) ->
+    a = year % 19
+    b = ~~(year / 100)
+    c = year % 100
+    d = ~~(b / 4)
+    e = b % 4
+    f = ~~((b + 8) / 25)
+    g = ~~((b - f + 1) / 3)
+    h = (19 * a + b - d - g + 15) % 30
+    i = ~~(c / 4)
+    k = c % 4
+    l = (32 + 2 * e + 2 * i - h - k) % 7
+    m = ~~((a + 11 * h + 22 * l) / 451)
+    n = h + l - 7 * m + 114
+    month = ~~(n / 31)
+    day = (n % 31) + 1
+    [month, day]
+
+  month = ''
+
+  Template.mite.user = ->
+    console.log localStorage['user']
+    this.user = JSON.parse localStorage['user']
+    
+  Template.body.key = -> Session.get 'key'
+  
+
+  Template.mite.events
+    'click #optout': ->
+      clearSettings()
+  
+  Template.settings.events
+     'submit': (event, template) ->
+        event.preventDefault()
+        Meteor.call "checkKey", $("#apiKey").val(), $("#miteHost").val(), (err, response) ->
+          if response.headers.status is '200 OK'
+            saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user
+          else
+            clearSettings()
+
+  Session.set 'key', localStorage['apiKey'] if localStorage['apiKey']
+
+
+     
+if Meteor.isServer
+  Meteor.methods
+    checkKey: (key, host) ->
+      url = "https://#{host}.mite.yo.lk/myself.json"
+      bla = Meteor.http.call('GET', url, 
+        params:
+          api_key: key,
+      )
 
   Meteor.startup ->
     # code to run on server at startup
+    
