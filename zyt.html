@@ -44,16 +44,12 @@
 </template>
 
 <template name="calendar">
-  {{#each months}}
-    <h4>
+  {{#each days}}
+    <p>
       {{this}}
-    </h4>
-    {{> days}}
+    </p>
   {{/each}}
 </template>
 
-<template name='days'>
-  {{val}}
- </template>
 
 

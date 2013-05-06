@@ -38,21 +38,29 @@ if Meteor.isClient
     # yyyy + '-' + if mm[1] then mm else "0"+mm[0] + '-' + if dd[1] then dd else "0"+dd[0]
     yyyy + '-' + mm + '-' + dd
 
-  months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
+  Template.calendar.days = (year = (new Date).getFullYear()) ->
+    d = new Date()
+    arr = []
+    # console.log d.getDate
+    while d.getFullYear() > new Date().getFullYear()-1
+      arr.push new Date(d)
+      d.setDate(d.getDate()-1)
+    # console.log day.yyyymmdd()   for day in arr
+    arr
 
   Template.mite.user = ->
     this.user = JSON.parse localStorage['user']
     
   Template.body.key = -> Session.get 'key'
   
-  Template.calendar.months = ->
-    months
+   
+    
 
-  Template.days.val = ->
-    Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], '2013-05-3', JSON.parse(localStorage['user']).id, (err, response) ->
-      result = JSON.parse(response.content)
-      console.log result[0].time_entry_group.minutes
-      console.log (new Date).yyyymmdd()
+  # Template.days.val = ->
+  #   Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], '2013-05-3', JSON.parse(localStorage['user']).id, (err, response) ->
+  #     result = JSON.parse(response.content)
+  #     console.log result[0].time_entry_group.minutes
+  #     console.log (new Date).yyyymmdd()
 
   Template.mite.events
     'click #optout': ->
