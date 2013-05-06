@@ -39,10 +39,21 @@
     <small>
       <a id="optout" href="#">not {{user.name}} ({{user.email}})?</a>
     </small>
+    {{> calendar}}
   </div>
 </template>
 
 <template name="calendar">
-
+  {{#each months}}
+    <h4>
+      {{this}}
+    </h4>
+    {{> days}}
+  {{/each}}
 </template>
+
+<template name='days'>
+  {{val}}
+ </template>
+
 

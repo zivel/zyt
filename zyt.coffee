@@ -30,14 +30,29 @@ if Meteor.isClient
     day = (n % 31) + 1
     [month, day]
 
-  month = ''
+  Date.prototype.yyyymmdd = ->
+    yyyy = this.getFullYear().toString()
+    mm = (this.getMonth()+1).toString()
+    dd  = this.getDate().toString()
+    # uncomment if you need leading zeros before month and days
+    # yyyy + '-' + if mm[1] then mm else "0"+mm[0] + '-' + if dd[1] then dd else "0"+dd[0]
+    yyyy + '-' + mm + '-' + dd
+
+  months = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember']
 
   Template.mite.user = ->
-    console.log localStorage['user']
     this.user = JSON.parse localStorage['user']
     
   Template.body.key = -> Session.get 'key'
   
+  Template.calendar.months = ->
+    months
+
+  Template.days.val = ->
+    Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], '2013-05-3', JSON.parse(localStorage['user']).id, (err, response) ->
+      result = JSON.parse(response.content)
+      console.log result[0].time_entry_group.minutes
+      console.log (new Date).yyyymmdd()
 
   Template.mite.events
     'click #optout': ->
@@ -60,10 +75,22 @@ if Meteor.isServer
   Meteor.methods
     checkKey: (key, host) ->
       url = "https://#{host}.mite.yo.lk/myself.json"
-      bla = Meteor.http.call('GET', url, 
+      Meteor.http.call('GET', url, 
         params:
           api_key: key,
       )
+    getTime: (key, host, date, userId) ->
+      url = "https://#{host}.mite.yo.lk/time_entries.json"
+      bla = Meteor.http.call('GET', url,
+        params:
+          api_key: key,
+          at: date,
+          user_id: userId
+          group_by: 'day'
+      )
+    
+      
+      
 
   Meteor.startup ->
     # code to run on server at startup
