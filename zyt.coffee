@@ -1,17 +1,37 @@
 if Meteor.isClient
-  
-  saveSettings = (host, key, user) ->
+
+  Days = new Meteor.Collection(null)
+  Calendar = new Meteor.Collection(null)
+
+  fillCalendar = (year = (new Date).getFullYear()) ->
+    d = new Date("#{year}.12.31")
+    year = new Array()
+    while d.getFullYear() > new Date().getFullYear()-1
+      Calendar.insert({
+        date: d
+        date_string: d.yyyymmdd(), 
+        month_string: (d.getMonth()+1).toString(), 
+        day_string: d.getDate().toString(),
+        year_string: d.getFullYear().toString(),
+        })
+      d.setDate(d.getDate()-1)
+
+
+
+  saveSettings = (host, key, user, tzg) ->
     localStorage['apiKey'] = key
     localStorage['miteHost'] = host
-    localStorage['user'] = JSON.stringify user   
+    localStorage['user'] = JSON.stringify user 
+    localStorage['tzg'] = parseInt(tzg,10)
     Session.set 'key', key
 
   clearSettings = ->
     localStorage.removeItem 'apiKey'
     localStorage.removeItem 'miteHost'
     localStorage.removeItem 'user'
+    localStorage.removeItem 'tzg'
     Session.set 'key', undefined
-  
+
   easterSunday = (year = (new Date).getFullYear()) ->
     a = year % 19
     b = ~~(year / 100)
@@ -28,7 +48,20 @@ if Meteor.isClient
     n = h + l - 7 * m + 114
     month = ~~(n / 31)
     day = (n % 31) + 1
-    [month, day]
+    new Date("#{year}.#{month}.#{day}")
+
+  sechsileuten = (year = (new Date).getFullYear()) ->
+    thrMon = getNthDayOfMonth(year, 4, 1, 3)
+    if new Date(easterSunday(year).getTime() + (3600000*24)).ddmm() == "#{thrMon}.4"
+      "#{thrMon+7}.4"
+    else if new Date(easterSunday(year).getTime() - (6*3600000*24)).ddmm() == "#{thrMon}.4" || year == '2015' # for some reason 2015 is different...
+      "#{thrMon-7}.4"
+    else
+      "#{thrMon}.4"
+
+  knabenschiessen = (year = (new Date).getFullYear()) ->
+    knSun = getNthDayOfMonth(year, 9, 0, 2)
+    "#{knSun+1}.9"
 
   Date.prototype.yyyymmdd = ->
     yyyy = this.getFullYear().toString()
@@ -36,31 +69,85 @@ if Meteor.isClient
     dd  = this.getDate().toString()
     # uncomment if you need leading zeros before month and days
     # yyyy + '-' + if mm[1] then mm else "0"+mm[0] + '-' + if dd[1] then dd else "0"+dd[0]
-    yyyy + '-' + mm + '-' + dd
+    "#{yyyy}-#{mm}-#{dd}"
 
-  Template.calendar.days = (year = (new Date).getFullYear()) ->
+  Date.prototype.ddmm = ->
+    mm = (this.getMonth()+1).toString()
+    dd  = this.getDate().toString()
+    "#{dd}.#{mm}"
+
+  getMiteTime = (date = (new Date).yyyymmdd()) ->
+    Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], date, JSON.parse(localStorage['user']).id, (err, response) ->
+      result = JSON.parse(response.content)
+      if result.length > 0
+        ist = result[0].time_entry_group.minutes * 60
+        Days.update({date: date}, {$set: {ist: ist}})
+      
+  getNthDayOfMonth = (year, month, day, number) ->
+    first = new Date year, month-1, 1
+    day_of_week = first.getDay()
+    ((number-1)*7+1) + ((7+day) - day_of_week) % 7
+    
+  setDays = (year = (new Date).getFullYear()) ->
     d = new Date()
-    arr = []
-    # console.log d.getDate
     while d.getFullYear() > new Date().getFullYear()-1
-      arr.push new Date(d)
+      Days.insert({
+        date: d.yyyymmdd(), 
+        month: (d.getMonth()+1).toString(), 
+        day: d.getDate().toString(),
+        year: d.getFullYear().toString(),
+        soll: getTargetTime(d.yyyymmdd(),localStorage['tzg']), 
+        ist: 0,
+        differenz: 0
+        })
+      getMiteTime d.yyyymmdd()
       d.setDate(d.getDate()-1)
-    # console.log day.yyyymmdd()   for day in arr
-    arr
+    
+  getTargetTime = (date = (new Date).yyyymmdd(), tzg = 100) ->
+    d = new Date(date)
+    freeDays = ['1.1', '2.1', '1.5', '1.8', '25.12', '26.12']
+    halfDays = []
+    es = easterSunday(d.getFullYear())
+    freeDays.push new Date(es.getTime() - (2*3600000*24)).ddmm() #Oster Freitag
+    freeDays.push new Date(es.getTime() + (3600000*24)).ddmm() #Oster Montag
+    freeDays.push new Date(es.getTime() + (39*3600000*24)).ddmm() #Auffahrt
+    freeDays.push new Date(es.getTime() + (50*3600000*24)).ddmm() #PfingstMontag
+    halfDays.push sechsileuten(d.getFullYear()) 
+    halfDays.push knabenschiessen(d.getFullYear())
+    # no work on sunday and saturday
+    if d.getDay() == 0 || d.getDay() == 6 
+      return 0
+    else if d.ddmm() in freeDays
+      return 0
+    else if d.ddmm() in halfDays
+      ((42*60*60/5) / 100 * tzg)/2 
+    else
+      (42*60*60/5) / 100 * tzg
+
+
+#TEMPLATE functions
+  # Template.calendar.days = ->
+    # Days.find({})
+  Template.calendar.months = ->
+    Calendar.find({},{sort: {date: 1}})
+    # distinctmonths = []
+    # months = new Array
+    # r.forEach (date) ->
+    #   console.log date
+
+    #   if date.month not in distinctmonths
+    #     d = Calendar.find({month: date.month})
+    #     months[date.month] = JSON.stringify d.fetch()
+    #     distinctmonths.push date.month
+    # console.log 
+    # months
+    
+    
 
   Template.mite.user = ->
     this.user = JSON.parse localStorage['user']
     
-  Template.body.key = -> Session.get 'key'
-  
-   
-    
-
-  # Template.days.val = ->
-  #   Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], '2013-05-3', JSON.parse(localStorage['user']).id, (err, response) ->
-  #     result = JSON.parse(response.content)
-  #     console.log result[0].time_entry_group.minutes
-  #     console.log (new Date).yyyymmdd()
+  Template.body.key = -> Session.get 'key'    
 
   Template.mite.events
     'click #optout': ->
@@ -71,21 +158,27 @@ if Meteor.isClient
         event.preventDefault()
         Meteor.call "checkKey", $("#apiKey").val(), $("#miteHost").val(), (err, response) ->
           if response.headers.status is '200 OK'
-            saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user
+            saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user, $("#tzg").val()
           else
             clearSettings()
 
-  Session.set 'key', localStorage['apiKey'] if localStorage['apiKey']
+  
+  if localStorage['apiKey']
+    Session.set 'key', localStorage['apiKey'] 
+    # setDays() we'll do that later again.
+    fillCalendar()
 
+  
+  
 
-     
+#SERVER stuff     
 if Meteor.isServer
   Meteor.methods
     checkKey: (key, host) ->
       url = "https://#{host}.mite.yo.lk/myself.json"
       Meteor.http.call('GET', url, 
         params:
-          api_key: key,
+          api_key: key
       )
     getTime: (key, host, date, userId) ->
       url = "https://#{host}.mite.yo.lk/time_entries.json"

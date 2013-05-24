@@ -17,16 +17,20 @@
 <template name="settings">
   <h1>The settings</h1>
   {{key}}
-  <form class="form-inline">
+  <form class="form-inline" action="POST">
     <fieldset>
       <label>
         Mite API-Key:
       </label>
       <input id='apiKey' type='text' name='apiKey' placeholder='your API-Key' value=''>
       <label>
-        Mite Host (the part before mite.yo.lk):
+        Mite Host (dä teil vor mite.yo.lk):
       </label>
       <input id='miteHost' type='text' name='miteHost' placeholder='your Mite Host' value=''>
+      <label>
+        Teilzytgrad:
+      </label>
+      <input id='tzg' type='text' name='tzg' placeholder='Teilzytgrad' value=''>%
       
       <button id='saveSettings' type='submit' class='btn'>save</button>
     </fieldset>
@@ -44,12 +48,27 @@
 </template>
 
 <template name="calendar">
+  {{#each months}}
+    <div class="month">
+      {{date_string}}<hr>
+    </div>
+  {{/each}}
+  
+</template>
+
+<!-- 
+<template name="calendar">
   {{#each days}}
     <p>
-      {{this}}
+      {{> day}}
     </p>
   {{/each}}
 </template>
 
-
+<template name="day">
+  <p>
+    {{date}} - {{ist}} - {{soll}} - {{differenz}}
+  </p>
+</template>
+ -->
 
