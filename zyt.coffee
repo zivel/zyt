@@ -134,8 +134,7 @@ if Meteor.isClient
     # months = new Array
     # r.forEach (date) ->
     #   console.log date
-
-    #   if date.month not in distinctmonths
+ #   if date.month not in distinctmonths
     #     d = Calendar.find({month: date.month})
     #     months[date.month] = JSON.stringify d.fetch()
     #     distinctmonths.push date.month
