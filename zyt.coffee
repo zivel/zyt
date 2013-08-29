@@ -125,24 +125,31 @@ if Meteor.isClient
       (42*60*60/5) / 100 * tzg
 
 
+
 #TEMPLATE functions
   # Template.calendar.days = ->
     # Days.find({})
-  Template.calendar.months = ->
-    Calendar.find({},{sort: {date: 1}})
-    # distinctmonths = []
-    # months = new Array
-    # r.forEach (date) ->
-    #   console.log date
- #   if date.month not in distinctmonths
-    #     d = Calendar.find({month: date.month})
-    #     months[date.month] = JSON.stringify d.fetch()
-    #     distinctmonths.push date.month
-    # console.log 
-    # months
-    
-    
 
+# fillCalendar = (year = (new Date).getFullYear()) ->
+#     d = new Date("#{year}.12.31")
+#     year = new Array()
+#     while d.getFullYear() > new Date().getFullYear()-1
+#       Calendar.insert({
+#         date: d
+#         date_string: d.yyyymmdd(), 
+#         month_string: (d.getMonth()+1).toString(), 
+#         day_string: d.getDate().toString(),
+#         year_string: d.getFullYear().toString(),
+#         })
+#       d.setDate(d.getDate()-1)
+
+
+  Template.calendar.year = ->
+    d = new Date("2013.12.31")
+    year = new Array()
+    while d.getFullYear() > new Date().getFullYear()-1
+      console.log d.yyyymmdd()
+    
   Template.mite.user = ->
     this.user = JSON.parse localStorage['user']
     
