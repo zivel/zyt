@@ -1,1 +1,44 @@
-/* CSS declarations go here */
+/* CSS taken from http://css-tricks.com/elastic-calendar-styling-with-pure-css/
+ * by Tim Wright and Chris Coyier
+ * adapted by me: Renato Furter
+ -----------------------------*/
+
+
+*		{margin:0;padding:0;font-family: monospace;}
+
+li		{list-style:none;}
+
+/*
+ * Day styles
+ -------------------------*/
+ol.month {display: block; float:left;}
+ol.month li	{width:4em;height:3em;float:left;margin:.2em; padding:.2em;overflow:auto;background-color: red;border-radius: 12px}
+
+ol.month li.monthtitle {width:450px;height:40px;text-align:center; font-size: 310%;
+	margin:2px; padding:10px;background-color: grey}
+ol.month li:nth-child(2),
+ol.month li:nth-child(9),
+ol.month li:nth-child(16),
+ol.month li:nth-child(23),
+ol.month li:nth-child(30),
+ol.month li:nth-child(37),
+ol.month li:nth-child(44) {clear:left;} 
+
+ol.month li.daystitle {background-color: yellow}
+
+
+/*
+ * Day content (UL/OL & P)
+ -------------------------*/
+/*li li p	 {font-size:.7em;display:block;}
+li li ol	 {width:auto;}
+li li ul li,
+li li ol li     {font-size:.7em;display:block;height:auto;width:auto; background: none;
+			margin:0;padding:.2em 0;float:none;}
+*/
+/*
+ * Inactive months
+ -------------------------*/
+ol.month li.currentmonth {}
+ol.month li.lastmonth,
+ol.month li.nextmonth { background-color: blue;}

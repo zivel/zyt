@@ -1,79 +1,50 @@
 <head>
-  <title>zyt</title>
+  <title>calendar</title>
 </head>
 
 <body>
-    {{> body}}
+  {{> calendar}}
 </body>
 
-<template name="body">
-  {{#if key}}
-    {{> mite}}
-  {{else}}
-    {{> settings}}
-  {{/if}}
-</template>
-
-<template name="settings">
-  <h1>The settings</h1>
-  {{key}}
-  <form class="form-inline" action="POST">
-    <fieldset>
-      <label>
-        Mite API-Key:
-      </label>
-      <input id='apiKey' type='text' name='apiKey' placeholder='your API-Key' value=''>
-      <label>
-        Mite Host (dä teil vor mite.yo.lk):
-      </label>
-      <input id='miteHost' type='text' name='miteHost' placeholder='your Mite Host' value=''>
-      <label>
-        Teilzytgrad:
-      </label>
-      <input id='tzg' type='text' name='tzg' placeholder='Teilzytgrad' value=''>%
-      
-      <button id='saveSettings' type='submit' class='btn'>save</button>
-    </fieldset>
-  </form>
-</template>
-
-<template name="mite">
-  <div>
-    <h3>Mite Zyt Rächnig</h3>
-    <small>
-      <a id="optout" href="#">not {{user.name}} ({{user.email}})?</a>
-    </small>
-    {{> calendar}}
-    {{> year}}
-  </div>
-</template>
-
 <template name="calendar">
-  {{#each months}}
-    <div class="month">
-      {{date_string}}<hr>
-    </div>
-  {{/each}}
-  
-</template>
+	<div class="container-fluid">
+		{{#each months}}
+			<ol class="month">
+				<li class="monthtitle">
+				{{this.name}}
+				</li>
+				<li class="daystitle">
+			    	MO
+			    </li>	
+				<li class="daystitle">
+			    	DI
+			    </li>	
+				<li class="daystitle">
+			    	MI
+			    </li>	
+				<li class="daystitle">
+			    	DO
+			    </li>	
+				<li class="daystitle">
+			    	FR
+			    </li>	
+				<li class="daystitle">
+			    	SA
+			    </li>	
+				<li class="daystitle">
+			    	SO
+			    </li>	
+			    {{#each this.days_before}}
+					<li class="lastmonth">{{this}}</li>
+				{{/each}}
+				{{#each this.days}}
+					<li class="currentmonth">{{this}}</li>
+				{{/each}}
+				{{#each this.days_after}}
+					<li class="nextmonth">{{this}}</li>
+				{{/each}}
+			</ol>
 
-
-<template name="year">
-  hi
+		{{/each}}
+	</div>
 </template>
-<!-- 
-<template name="calendar">
-  {{#each days}}
-    <p>
-      {{> day}}
-    </p>
-  {{/each}}
-</template>
-
-<template name="day">
-  <p>
-    {{date}} - {{ist}} - {{soll}} - {{differenz}}
-  </p>
-</template>
- -->
-
