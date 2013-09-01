@@ -3,11 +3,26 @@
 </head>
 
 <body>
+  {{> head}}
   {{> calendar}}
 </body>
 
+<template name="head">
+<div class="navbar navbar-fixed-top">
+	<div class="navbar-inner">
+        <div class="container">
+             <span class="brand">Mite Zyt Rächnig für's Jahr
+             <button id="lastyear" class="btn btn-mini btn-danger" type="button" value="{{current.lastyear}}">-</button>
+             {{current.year}}
+             <button id="nextyear" class="btn btn-mini btn-success" type="button" value="{{current.nextyear}}">+</button>
+             </span>
+        </div>
+    </div>
+</div>
+</template>
+
 <template name="calendar">
-	<div class="container-fluid">
+	<div class="calendar">
 		{{#each months}}
 			<ol class="month">
 				<li class="monthtitle">
@@ -38,11 +53,34 @@
 					<li class="lastmonth">{{this}}</li>
 				{{/each}}
 				{{#each this.days}}
-					<li class="currentmonth">{{this}}</li>
+					<li class="currentmonth">
+						{{this}}
+						<p>
+						<span class="soll">8.24</span>
+						<span class="ist">8.13</span></br>
+						<span class="total">13d 0.8h<span>
+						</p>
+					</li>
 				{{/each}}
 				{{#each this.days_after}}
 					<li class="nextmonth">{{this}}</li>
 				{{/each}}
+				{{#if this.empty_line}}
+				<li class="emptyday">
+			    </li>	
+				<li class="emptyday">
+			    </li>	
+				<li class="emptyday">
+			    </li>	
+				<li class="emptyday">
+			    </li>	
+				<li class="emptyday">
+			    </li>	
+				<li class="emptyday">
+			    </li>	
+				<li class="emptyday">
+			    </li>
+				{{/if}}
 			</ol>
 
 		{{/each}}

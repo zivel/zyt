@@ -4,17 +4,20 @@
  -----------------------------*/
 
 
-*		{margin:0;padding:0;font-family: monospace;}
+*		{margin:0; padding:0;font-family: monospace;}
 
 li		{list-style:none;}
 
+.brand#brandleft {float:left;color: red;padding-left:0;margin-left:0;}
+div.a.right {float:right;}
 /*
  * Day styles
  -------------------------*/
+div.calendar {padding-top:70px;}
 ol.month {display: block; float:left;}
-ol.month li	{width:4em;height:3em;float:left;margin:.2em; padding:.2em;overflow:auto;background-color: red;border-radius: 12px}
+ol.month li	{width:4em;height:4em;float:left;margin:.2em; padding:.2em;overflow:auto;background-color: red;border-radius: 12px}
 
-ol.month li.monthtitle {width:450px;height:40px;text-align:center; font-size: 310%;
+ol.month li.monthtitle {width:450px;height:30px;text-align:center; font-size: 310%;
 	margin:2px; padding:10px;background-color: grey}
 ol.month li:nth-child(2),
 ol.month li:nth-child(9),
@@ -24,17 +27,20 @@ ol.month li:nth-child(30),
 ol.month li:nth-child(37),
 ol.month li:nth-child(44) {clear:left;} 
 
+ol.month li.emptyday {background-color: white}
 ol.month li.daystitle {background-color: yellow}
+
 
 
 /*
  * Day content (UL/OL & P)
  -------------------------*/
-/*li li p	 {font-size:.7em;display:block;}
-li li ol	 {width:auto;}
-li li ul li,
-li li ol li     {font-size:.7em;display:block;height:auto;width:auto; background: none;
-			margin:0;padding:.2em 0;float:none;}
+li p	 {font-size:0.7em;font-weight: bolder; display:block;float:none; text-align: center}
+li p span.total	 {font-size:1.2em;background-color: pink; border-radius: 3px}
+
+/*
+li ol li     {font-size:.7em;display:block;height:auto;width:auto; background: none;
+				margin:0;padding:.2em 0;float:none;}
 */
 /*
  * Inactive months
