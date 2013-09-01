@@ -8,21 +8,63 @@
 </body>
 
 <template name="head">
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-inverse navbar-top">
 	<div class="navbar-inner">
         <div class="container">
-             <span class="brand">Mite Zyt Rächnig für's Jahr
+             <span class="brand">Mite Zyt-Rächnig für's Jahr
              <button id="lastyear" class="btn btn-mini btn-danger" type="button" value="{{current.lastyear}}">-</button>
              {{current.year}}
              <button id="nextyear" class="btn btn-mini btn-success" type="button" value="{{current.nextyear}}">+</button>
              </span>
         </div>
+        <div class="container">
+        	{{> settings}}
+        </div>
     </div>
 </div>
 </template>
 
+<template name="settings">
+	<form class="form-inline" action="POST">
+    	<fieldset>
+        	<label>
+       			Mite API-Key:
+       		</label>
+       		<input id='apiKey' type='text' name='apiKey' placeholder='Diin API-Key' value=''>
+       		<br />
+       		<label>
+        			Mite Host (dä teil vor mite.yo.lk):
+       		</label>
+       		{{#if miteHost}}
+       			<span id='miteHost'>{{miteHost}}</span>
+			{{else}}
+        		<input id='miteHost' type='text' name='miteHost' placeholder='diin Mite Host' value=''>
+       		{{/if}}
+       		<br />
+       		<label>
+       			Teilzytgrad:
+       		</label>
+       		{{#if tzg}}
+       			{{tzg}}
+       			<input id='tzg' type='hidden' name='tzg' value='{{tzg}}'>
+        	{{else}}
+        		<input id='tzg' type='text' name='tzg' placeholder='Teilzytgrad' value=''>
+       		{{/if}}%
+			<br />
+       		<button id='saveSettings' class='btn'>speicherä</button>
+       	</fieldset>
+	</form>
+</template>
+
+<template name="settings_saved">
+    <small>¯
+      <a id="optout" href="#">not {{user.name}} ({{user.email}})?</a>
+    </small>
+</template>
+
 <template name="calendar">
-	<div class="calendar">
+	
+		<div class="calendar">
 		{{#each months}}
 			<ol class="month">
 				<li class="monthtitle">
