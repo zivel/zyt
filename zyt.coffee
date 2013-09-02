@@ -2,13 +2,17 @@ if Meteor.isClient
 
 #Session Stuff
 	if !Session.get('year')
-		Session.set('year', (new Date).getFullYear())
+		console.log 'setze jahr'
+		Session.set('year', parseInt((new Date).getFullYear()))
 	
 	if localStorage['apiKey'] && localStorage['miteHost']
 		Meteor.call "checkKey", localStorage['apiKey'], localStorage['miteHost'], (err, response) ->
 			if response
-				Session.set('key', localStorage['apiKey'])	
-				saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user, $("#tzg").val()
+				Session.set 'apiKey', localStorage['apiKey']
+				Session.set 'miteHost', localStorage['miteHost'] 
+				Session.set 'user', localStorage['user']
+				Session.set 'tzg', localStorage['tzg']
+				Session.set 'editSettings', true
 			else
 				clearSettings()	
 
@@ -21,10 +25,10 @@ if Meteor.isClient
 		Session.set 'miteHost', host
 		Session.set 'user', JSON.stringify user
 		Session.set 'tzg', parseInt(tzg,10)
+		Session.set 'editSettings', true
 	
 	clearSettings = ->
 		console.log 'clear'
-		console.log Session.get('tzg')
 		localStorage.removeItem 'apiKey'
 		localStorage.removeItem 'miteHost'
 		localStorage.removeItem 'user'
@@ -34,29 +38,39 @@ if Meteor.isClient
 		Session.set 'user', undefined
 		Session.set 'tzg', undefined
 
+	collapsSettings = ->
+		if Session.get('apiKey') && Session.get('tzg') && Session.get('miteHost') && Session.get('editSettings')
+    	false
+    else
+    	true
+
 # Template Stuff
-	Template.calendar.months = ->
-    	months = Calendar()
-    	months
+	Template.calendar.months = ->	Calendar()
 
-    Template.head.current = ->
-    	current =
-    		year: Session.get('year'),
-    		nextyear: Session.get('year') + 1,
-    		lastyear: Session.get('year') - 1
+	Template.head.current = ->
+  	current =
+    	year: Session.get('year'),
+    	nextyear: Session.get('year') + 1,
+    	lastyear: Session.get('year') - 1
 
-    
-    Template.settings.tzg = -> Session.get('tzg')
-    Template.settings.miteHost = -> Session.get('miteHost')
-
+	Template.settings.apiKey = -> Session.get('apiKey')
+	Template.settings.tzg = -> Session.get('tzg')
+	Template.settings.miteHost = -> Session.get('miteHost')
+	Template.settings.user = -> JSON.parse Session.get('user')
+	Template.settings.notAllSet = -> collapsSettings()
+  	
 	Template.head.events "click button": (event, template) ->
 		if event.srcElement.id == 'saveSettings'
 			event.preventDefault()
 			Meteor.call "checkKey", $("#apiKey").val(), $("#miteHost").val(), (err, response) ->
 				if response
+					Session.set('key', localStorage['apiKey'])	
 					saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user, $("#tzg").val()
 				else
-				 	clearSettings()
+					clearSettings()
+		# else if event.srcElement.id == 'changeSettings'
+		# 	event.preventDefault()
+		# 	Session.set('editSettings', false)
 		else
 			console.log event.srcElement
 			Session.set('year',parseInt(event.srcElement.value))

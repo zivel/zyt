@@ -1,5 +1,5 @@
 <head>
-  <title>calendar</title>
+  <title>Mite Zyt-Rächnig</title>
 </head>
 
 <body>
@@ -8,52 +8,62 @@
 </body>
 
 <template name="head">
-<div class="navbar navbar-inverse navbar-top">
+<div class="navbar navbar-top">
 	<div class="navbar-inner">
-        <div class="container">
-             <span class="brand">Mite Zyt-Rächnig für's Jahr
-             <button id="lastyear" class="btn btn-mini btn-danger" type="button" value="{{current.lastyear}}">-</button>
-             {{current.year}}
-             <button id="nextyear" class="btn btn-mini btn-success" type="button" value="{{current.nextyear}}">+</button>
-             </span>
-        </div>
-        <div class="container">
-        	{{> settings}}
-        </div>
+  	<div class="container">
+    	<span class="brand">Mite Zyt-Rächnig für's Jahr
+      	<button id="lastyear" class="btn btn-mini btn-danger" type="button" value="{{current.lastyear}}">-</button>
+        {{current.year}}
+        <button id="nextyear" class="btn btn-mini btn-success" type="button" value="{{current.nextyear}}">+</button>
+      </span>
     </div>
+  </div>
+  	<div class="navbar-inner">
+    	<div class="container">
+      	{{> settings}}
+  		</div>
+  	</div>
+	</div>
 </div>
 </template>
 
 <template name="settings">
+	{{#if notAllSet}}
+  	<a class="accordion-toggle" data-toggle="collapse" data-target="#settings" href="#collapseOne">
+  	nöd alles xetzt
+  	</a>
+		<div id="settings" class="collapse in">
+	{{else}}
+		<a class="accordion-toggle" data-toggle="collapse" data-target="#settings" href="#collapseOne">
+  	iigloggt als {{user.name}}
+  	</a>
+		<div id="settings" class="collapse">
+	{{/if}}
 	<form class="form-inline" action="POST">
     	<fieldset>
         	<label>
        			Mite API-Key:
        		</label>
-       		<input id='apiKey' type='text' name='apiKey' placeholder='Diin API-Key' value=''>
+       		<input id='apiKey' type='text' name='apiKey' placeholder='Diin API-Key' value='{{apiKey}}'>
        		<br />
        		<label>
         			Mite Host (dä teil vor mite.yo.lk):
        		</label>
-       		{{#if miteHost}}
-       			<span id='miteHost'>{{miteHost}}</span>
-			{{else}}
-        		<input id='miteHost' type='text' name='miteHost' placeholder='diin Mite Host' value=''>
-       		{{/if}}
+       		<input id='miteHost' type='text' name='miteHost' placeholder='diin Mite Host' value='{{miteHost}}'>
        		<br />
        		<label>
        			Teilzytgrad:
        		</label>
-       		{{#if tzg}}
-       			{{tzg}}
-       			<input id='tzg' type='hidden' name='tzg' value='{{tzg}}'>
-        	{{else}}
-        		<input id='tzg' type='text' name='tzg' placeholder='Teilzytgrad' value=''>
-       		{{/if}}%
-			<br />
-       		<button id='saveSettings' class='btn'>speicherä</button>
+       		<input id='tzg' type='text' name='tzg' placeholder='Teilzytgrad' value='{{tzg}}'>
+       		<br />
+					{{#if notAllSet}}
+						<button id='saveSettings' class='btn'>speichere</button>
+					{{else}}
+						<button id='saveSettings' class='btn'>ändere</button>
+       		{{/if}}
        	</fieldset>
 	</form>
+</div>
 </template>
 
 <template name="settings_saved">
