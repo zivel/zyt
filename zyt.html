@@ -12,9 +12,9 @@
 	<div class="navbar-inner">
   	<div class="container">
     	<span class="brand">Mite Zyt-Rächnig für's Jahr
-      	<button id="lastyear" class="btn btn-mini btn-danger" type="button" value="{{current.lastyear}}">-</button>
+      	<button id="lastyear" class="btn btn-mini btn-danger" type="button">-</button>
         {{current.year}}
-        <button id="nextyear" class="btn btn-mini btn-success" type="button" value="{{current.nextyear}}">+</button>
+        <button id="nextyear" class="btn btn-mini btn-success" type="button">+</button>
       </span>
     </div>
   </div>
@@ -78,7 +78,7 @@
 		{{#each months}}
 			<ol class="month">
 				<li class="monthtitle">
-				{{this.name}}
+				<span>{{this.name}}</span>
 				</li>
 				<li class="daystitle">
 			    	MO
@@ -106,10 +106,11 @@
 				{{/each}}
 				{{#each this.days}}
 					<li class="currentmonth">
-						{{this}}
+						<span>{{this}}</span>
 						<p>
 						<span class="soll">8.24</span>
-						<span class="ist">8.13</span></br>
+						<span class="ist">8.13</span>
+						</ br>
 						<span class="total">13d 0.8h<span>
 						</p>
 					</li>

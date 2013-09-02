@@ -59,8 +59,9 @@ if Meteor.isClient
 	Template.settings.user = -> JSON.parse Session.get('user')
 	Template.settings.notAllSet = -> collapsSettings()
   	
+  # all click events in the head
 	Template.head.events "click button": (event, template) ->
-		if event.srcElement.id == 'saveSettings'
+		if event.target.id == 'saveSettings'
 			event.preventDefault()
 			Meteor.call "checkKey", $("#apiKey").val(), $("#miteHost").val(), (err, response) ->
 				if response
@@ -68,12 +69,10 @@ if Meteor.isClient
 					saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user, $("#tzg").val()
 				else
 					clearSettings()
-		# else if event.srcElement.id == 'changeSettings'
-		# 	event.preventDefault()
-		# 	Session.set('editSettings', false)
-		else
-			console.log event.srcElement
-			Session.set('year',parseInt(event.srcElement.value))
+		else if event.target.id == 'nextyear'
+			Session.set('year',parseInt(Session.get('year')) + 1 )
+		else if event.target.id == 'lastyear'
+			Session.set('year',parseInt(Session.get('year')) - 1 )
 
 # Calendar view  
 	Calendar = () ->
