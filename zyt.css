@@ -12,13 +12,14 @@ div.a.right {float:right;}
 /*
  * Day styles
  -------------------------*/
-body {background-color: #888888}
+body {background-color: #FFFFCC}
 div.calendar {color: white;font-family: monospace;}
 ol.month {display: block; float:left;}
-ol.month li	{width:4em;height:4em;float:left;margin:.2em; padding:.2em;overflow:auto;background-color: #585858;border-radius: 12px}
+/* days */
+ol.month li	{width:4em;height:4em;float:left;margin:.2em; padding:.2em;overflow:auto;background-color: #707d48;border-radius: 12px}
 
 ol.month li.monthtitle {width:450px;height:30px;text-align:center; font-size: 310%;
-	margin:2px; padding:10px;background-color: #101010}
+	margin:2px; padding:10px;background-color: #877626}
 ol.month li:nth-child(2),
 ol.month li:nth-child(9),
 ol.month li:nth-child(16),
@@ -27,8 +28,8 @@ ol.month li:nth-child(30),
 ol.month li:nth-child(37),
 ol.month li:nth-child(44) {clear:left;} 
 
-ol.month li.emptyday {background-color: #888888}
-ol.month li.daystitle {background-color: #282828; height:1.4em; text-align: center;}
+ol.month li.emptyday {background-color: #FFFFCC}
+ol.month li.daystitle {background-color: #d0b712; height:1.4em; text-align: center;}
 
 
 
@@ -47,4 +48,4 @@ li ol li     {font-size:.7em;display:block;height:auto;width:auto; background: n
  -------------------------*/
 ol.month li.currentmonth {}
 ol.month li.lastmonth,
-ol.month li.nextmonth { background-color: #A8A8A8;}
+ol.month li.nextmonth { background-color: #d1d7b1;}
