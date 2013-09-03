@@ -9,10 +9,15 @@
 li		{list-style:none;}
 
 div.a.right {float:right;}
+
+.abstand {margin-left: 40px}
+
 /*
  * Day styles
  -------------------------*/
 body {background-color: #FFFFCC}
+
+
 div.calendar {color: white;font-family: monospace;}
 ol.month {display: block; float:left;}
 /* days */
