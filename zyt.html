@@ -104,12 +104,14 @@
 			    {{#each this.days_before}}
 					<li class="lastmonth">{{this}}</li>
 				{{/each}}
-				{{#each this.days}}
+				{{#each this.dates}}
 					<li class="currentmonth">
-						<span>{{this}}</span>
+						<span>{{day}}</span>
 						<p>
 						<span class="soll">8.24</span>
-						<span class="ist">8.13</span>
+						<span class="ist">
+							{{miteTime}}
+						</span>
 						</ br>
 						<span class="total">13d 0.8h<span>
 						</p>
