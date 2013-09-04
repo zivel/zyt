@@ -49,19 +49,22 @@ if Meteor.isClient
       false
 
   fillMite = ->
+    console.log Session.get('year')
     end = new Date(Session.get('year'),11,31)
     daysOfYear = []
     start = new Date(Session.get('year'), 0, 1)
 
     while start <= end
-      Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], new Date(start).yyyymmdd(), JSON.parse(localStorage['user']).id, (err, response) ->
+      Session.set(start.yyyymmdd(),'0:00')
+      Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], start.yyyymmdd(), JSON.parse(localStorage['user']).id, (err, response) ->
         result = JSON.parse(response.content)
         if result.length > 0
-          zeit = result[0].time_entry_group.minutes * 60
+          zeit = result[0].time_entry_group.minutes
           day = result[0].time_entry_group.day
-          console.log "setze session #{day} mit #{zeit}"
-          Session.set(day,zeit)
-          
+          hours = Math.floor(zeit / 60)
+          minutes = zeit % 60
+          Session.set(day,"#{hours}:#{minutes}")
+        
       start.setDate(start.getDate() + 1)
     
     
@@ -106,8 +109,10 @@ if Meteor.isClient
           clearSettings()
     else if event.target.id == 'nextyear'
       Session.set('year',parseInt(Session.get('year')) + 1 )
+      fillMite()
     else if event.target.id == 'lastyear'
       Session.set('year',parseInt(Session.get('year')) - 1 )
+      fillMite()
 
 # Calendar view  
   Calendar = () ->
@@ -137,8 +142,8 @@ if Meteor.isClient
       name: monthsArr[first_day.getMonth()]
       empty_line: true unless days.length + days_before.length + days_after.length == 42
   
-  if allSet()
-    fillMite()
+  
+  fillMite()
 
 if Meteor.isServer
   Meteor.methods
@@ -150,6 +155,7 @@ if Meteor.isServer
         )
       getTime: (key, host, date, userId) ->
         url = "https://#{host}.mite.yo.lk/time_entries.json"
+        console.log "fetching #{date}"
         bla = Meteor.http.call('GET', url,
           params:
             api_key: key,
@@ -157,5 +163,6 @@ if Meteor.isServer
             user_id: userId
             group_by: 'day'
         )
+
   Meteor.startup ->
   # code to run on server at startup
