@@ -1,9 +1,12 @@
 if Meteor.isClient
+  @Times = new Meteor.Collection("times");
 
-#Session Stuff
   if !Session.get('year')
     Session.set('year', parseInt((new Date).getFullYear()))
-  
+
+  Meteor.call "fillDB", Session.get('year'), localStorage['apiKey']
+
+#Session Stuff
   if localStorage['apiKey'] && localStorage['miteHost']
     Meteor.call "checkKey", localStorage['apiKey'], localStorage['miteHost'], (err, response) ->
       if response
@@ -146,6 +149,8 @@ if Meteor.isClient
   fillMite()
 
 if Meteor.isServer
+  Times = new Meteor.Collection("times");
+
   Meteor.methods
       checkKey: (key, host) ->
         url = "https://#{host}.mite.yo.lk/myself.json"
@@ -155,14 +160,28 @@ if Meteor.isServer
         )
       getTime: (key, host, date, userId) ->
         url = "https://#{host}.mite.yo.lk/time_entries.json"
-        console.log "fetching #{date}"
-        bla = Meteor.http.call('GET', url,
+        Meteor.http.call('GET', url,
           params:
             api_key: key,
             at: date,
             user_id: userId
             group_by: 'day'
-        )
+          , (err, result) ->
+            console.log result
+          )
+
+      fillDB: (year, apiKey) ->
+        start = new Date(year, 0, 1)
+        end = new Date(year,11,31)
+        if Times.find().count <= 365
+          while start <= end
+            if Times.find({date: start}).count() == 0
+              Times.insert({d: start.getDate(), m: start.getMonth(), y: year, date: start, ist: 0, soll: 0, apiKey: apiKey})
+            else
+              Times.update(date: start, {$set: {d: start.getDate(), m: start.getMonth(), y: year, date: start, ist: 0, soll: 0, apiKey: apiKey}})
+            start.setDate(start.getDate() + 1)
+
+
 
   Meteor.startup ->
   # code to run on server at startup
