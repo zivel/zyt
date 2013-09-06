@@ -58,15 +58,15 @@ if Meteor.isClient
     start = new Date(Session.get('year'), 0, 1)
 
     while start <= end
-      Session.set(start.yyyymmdd(),'0:00')
-      Meteor.call 'getTime', localStorage['apiKey'], localStorage['miteHost'], start.yyyymmdd(), JSON.parse(localStorage['user']).id, (err, response) ->
+      Meteor.call 'getMiteTimeByDay', localStorage['apiKey'], localStorage['miteHost'], start.yyyymmdd(), JSON.parse(localStorage['user']).id, (err, response) ->
         result = JSON.parse(response.content)
         if result.length > 0
           zeit = result[0].time_entry_group.minutes
-          day = result[0].time_entry_group.day
-          hours = Math.floor(zeit / 60)
-          minutes = zeit % 60
-          Session.set(day,"#{hours}:#{minutes}")
+
+          # day = result[0].time_entry_group.day
+          # hours = Math.floor(zeit / 60)
+          # minutes = zeit % 60
+          # Session.set(day,"#{hours}:#{minutes}")
         
       start.setDate(start.getDate() + 1)
     
@@ -146,7 +146,7 @@ if Meteor.isClient
       empty_line: true unless days.length + days_before.length + days_after.length == 42
   
   
-  fillMite()
+  # fillMite()
 
 if Meteor.isServer
   Times = new Meteor.Collection("times");
@@ -158,30 +158,26 @@ if Meteor.isServer
           params:
             api_key: key
         )
-      getTime: (key, host, date, userId) ->
+      getMiteTimeByDay: (key, host, date, userId) ->
         url = "https://#{host}.mite.yo.lk/time_entries.json"
-        Meteor.http.call('GET', url,
-          params:
-            api_key: key,
-            at: date,
-            user_id: userId
+        Meteor.http.call('GET', url, 
+          params: 
+            api_key: key, 
+            at: date, 
+            user_id: userId, 
             group_by: 'day'
-          , (err, result) ->
-            console.log result
-          )
+        )
 
       fillDB: (year, apiKey) ->
         start = new Date(year, 0, 1)
         end = new Date(year,11,31)
-        if Times.find().count <= 365
+        if Times.find(y: year, apiKey: apiKey).count() < 365
           while start <= end
-            if Times.find({date: start}).count() == 0
+            if Times.find({date: start, apiKey: apiKey}).count() == 0
               Times.insert({d: start.getDate(), m: start.getMonth(), y: year, date: start, ist: 0, soll: 0, apiKey: apiKey})
             else
-              Times.update(date: start, {$set: {d: start.getDate(), m: start.getMonth(), y: year, date: start, ist: 0, soll: 0, apiKey: apiKey}})
+              Times.update(date: start, apiKey: apiKey, {$set: {d: start.getDate(), m: start.getMonth(), y: year, date: start, ist: 0, soll: 0, apiKey: apiKey}})
             start.setDate(start.getDate() + 1)
-
-
-
+        
   Meteor.startup ->
   # code to run on server at startup
