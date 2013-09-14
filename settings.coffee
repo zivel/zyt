@@ -1,15 +1,14 @@
-saveSettings = (host, key, user, tzg) ->
+share.saveSettings = (host, key, user, tzg=100) ->
   localStorage['apiKey'] = key
   localStorage['miteHost'] = host
   localStorage['user'] = JSON.stringify user 
+  console.log tzg
+  if tzg == '' || tzg == 'NaN'
+    tzg = 100
   localStorage['tzg'] = parseInt(tzg,10)
-  Session.set 'apiKey', key
-  Session.set 'miteHost', host
-  Session.set 'user', JSON.stringify user
-  Session.set 'tzg', parseInt(tzg,10)
-  Session.set 'editSettings', true
+  share.saveToSession()
 
-clearSettings = ->
+share.clearSettings = ->
   localStorage.removeItem 'apiKey'
   localStorage.removeItem 'miteHost'
   localStorage.removeItem 'user'
@@ -18,3 +17,10 @@ clearSettings = ->
   Session.set 'miteHost', undefined
   Session.set 'user', undefined
   Session.set 'tzg', undefined
+
+share.saveToSession = ->
+  Session.set 'apiKey', localStorage['apiKey']
+  Session.set 'miteHost', localStorage['miteHost']
+  Session.set 'user', localStorage['user']
+  Session.set 'tzg', localStorage['tzg']
+  

@@ -28,16 +28,16 @@
 </template>
 
 <template name="settings">
-	{{#if notAllSet}}
-  	<a class="accordion-toggle" data-toggle="collapse" data-target="#settings" href="#collapseOne">
-  	nöd alles xetzt
-  	</a>
-		<div id="settings" class="collapse in">
+	{{#if allSet}}
+  		<a class="accordion-toggle" data-toggle="collapse" data-target="#settings" href="#collapseOne">
+  		iigloggt als {{user.name}}<small class="abstand">Host: {{miteHost}}.mite.yo.lk, Teilzytgrad: {{tzg}}</small>
+  		</a>
+		<div id="settings" class="collapse">
 	{{else}}
 		<a class="accordion-toggle" data-toggle="collapse" data-target="#settings" href="#collapseOne">
-  	iigloggt als {{user.name}}<small class="abstand">Host: {{miteHost}}, Teilzytgrad: {{tzg}}</small>
-  	</a>
-		<div id="settings" class="collapse">
+  		nöd alles xetzt
+  		</a>
+		<div id="settings" class="collapse in">
 	{{/if}}
 	<form class="form-inline" action="POST">
     	<fieldset>
@@ -56,11 +56,13 @@
        		</label>
        		<input id='tzg' type='text' name='tzg' placeholder='Teilzytgrad' value='{{tzg}}'>
        		<br />
-					{{#if notAllSet}}
-						<button id='saveSettings' class='btn'>speichere</button>
+       				<button id='saveSettings' class='btn' data-toggle="collapse" data-target="#settings">
+					{{#if allSet}}
+						ändere
 					{{else}}
-						<button id='saveSettings' class='btn'>ändere</button>
-       		{{/if}}
+						speichere
+		       		{{/if}}
+		       		</button>
        	</fieldset>
 	</form>
 </div>
