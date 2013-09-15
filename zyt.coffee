@@ -28,6 +28,7 @@ if Meteor.isClient
        Session.get('tzg') && 
        Session.get('miteHost') then true else false
 
+  
 # all click events in the head
   Template.head.events "click button": (event, template) ->
     if event.target.id == 'saveSettings'
@@ -36,17 +37,22 @@ if Meteor.isClient
         if response
           console.log response
           share.saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user, $("#tzg").val()
-          $("#settings").addClass('in')
         else
           share.clearSettings()
 
 
 if Meteor.isServer
-    Meteor.methods
-      checkKey: (key, host) ->
-        url = "https://#{host}.mite.yo.lk/myself.json"
-        Meteor.http.call('GET', url, 
-          params:
-            api_key: key
-        )
+  targetTimes = new Meteor.Collection("targetTimes");
+
+  Meteor.methods
+    checkKey: (key, host) ->
+      url = "https://#{host}.mite.yo.lk/myself.json"
+      Meteor.http.call('GET', url, 
+        params:
+          api_key: key
+      )
+    addTargetTime: (date) ->
+      console.log share.getTargetTime(date)
+
   Meteor.startup ->
+    Meteor.call "addTargetTime", new Date("2012.09.13")
