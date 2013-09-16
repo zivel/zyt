@@ -3,6 +3,8 @@ if Meteor.isClient
 
   if !Session.get('year')
     Session.set('year', parseInt((new Date).getFullYear()))
+
+  Meteor.call "setYear", Session.get('year')
   
   if localStorage['apiKey'] && localStorage['miteHost']
     Meteor.call "checkKey", localStorage['apiKey'], localStorage['miteHost'], (err, response) ->
@@ -39,7 +41,11 @@ if Meteor.isClient
           share.saveSettings $("#miteHost").val(), $("#apiKey").val(), response.data.user, $("#tzg").val()
         else
           share.clearSettings()
-
+    else if event.target.id == 'nextyear'
+      Session.set('year',parseInt(Session.get('year')) + 1 )
+    else if event.target.id == 'lastyear'
+      Session.set('year',parseInt(Session.get('year')) - 1 )
+    Meteor.call "fillInTargetTime", Session.get('year')
 
 if Meteor.isServer
   targetTimes = new Meteor.Collection("targetTimes");
@@ -52,7 +58,24 @@ if Meteor.isServer
           api_key: key
       )
     addTargetTime: (date) ->
-      console.log share.getTargetTime(date)
+      share.getTargetTime(date)
+    fillInTargetTime: (year = new Date().getFullYear(), force = false) ->
+      console.log "going for #{year}"
+      start = new Date(year, 0, 1)
+      end = new Date(year,11,31)
+      if targetTimes.find(y: year).count() < 365 || force == true
+        while start <= end
+          targetMin = Meteor.call "addTargetTime", start     
+          if targetTimes.find({date: start}).count() == 0
+              targetTimes.insert({d: start.getDate(), m: start.getMonth(), y: year, date: start, soll: targetMin})
+              console.log "writing #{start} = #{targetMin}"
+            else
+              targetTimes.update(date: start, {$set: {d: start.getDate(), m: start.getMonth(), y: year, date: start, soll: targetMin}})
+              console.log "updating #{start} = #{targetMin}"
+            start.setDate(start.getDate() + 1)
+    
 
   Meteor.startup ->
-    Meteor.call "addTargetTime", new Date("2012.09.13")
+    Meteor.call "fillInTargetTime", new Date().getFullYear(), true
+
+    
