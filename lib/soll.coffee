@@ -39,6 +39,12 @@ Date.prototype.ddmm = ->
   dd  = this.getDate().toString()
   "#{dd}.#{mm}"
     
+Date.prototype.yyyymmdd = ->
+  yyyy = this.getFullYear().toString()
+  mm = (this.getMonth()+1).toString()
+  dd  = this.getDate().toString()
+  "#{yyyy}-#{if mm[1] then mm else "0"+mm[0]}-#{if dd[1] then dd else "0"+dd[0]}"
+
 share.getTargetTime = (d = new Date()) ->
   freeDays = ['1.1', '2.1', '1.5', '1.8', '25.12', '26.12']
   halfDays = []

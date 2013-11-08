@@ -5,45 +5,37 @@ if Meteor.isClient
     Session.set('year', parseInt((new Date).getFullYear()))
 
   Meteor.call "setYear", Session.get('year')
-  
+
+    
   if localStorage['apiKey'] && localStorage['miteHost']
     Meteor.call "checkKey", localStorage['apiKey'], localStorage['miteHost'], (err, response) ->
       if response
         share.saveToSession()
-        start = new Date(Session.get('year'), 0, 1)
-        end = new Date(Session.get('year'),11,31)
-        while start <= end
-          day =
-            date: start,
-            ist: null,
-            soll: share.getTargetTime(start),
-            manual_soll: null,
-            user_id: JSON.parse(Session.get('user')).id
-            comment: null
-          
-          # check if day is in db
-          if @Times.find({date: start, user_id: JSON.parse(Session.get('user')).id}).count() == 0
-            @Times.insert({day})
-            console.log 'day does not exist!'
-          else
-            console.log 'day exists!'
-          # console.log day
-
-          # if is read out db and check if complete
-          #    if mite missing
-          #       get mite time
-          #    if soll missing
-          #       get soll time
-          #    save to db
-          # else
-          #   get mite time
-          #   get soll time
-          #   save to db
-          # return day
-          start.setDate(start.getDate() + 1)
-
+        updateAllTimes()
       else
         share.clearSettings() 
+
+  updateAllTimes = () -> 
+    start = new Date(Session.get('year'), 0, 1)
+    end = new Date(Session.get('year'),11,31)
+    user_id = JSON.parse(Session.get('user')).id
+    while start <= end
+      if @Times.find({date: start, user_id: user_id}).count() > 0
+        current_day = @Times.findOne({date: start})
+        day = current_day.day
+      else
+        day =
+          date: start,
+          ist: null,
+          soll: share.getTargetTime(start),
+          manual_soll: null,
+          user_id: JSON.parse(Session.get('user')).id
+          comment: null
+        @Times.insert({date: day.date, user_id: day.user_id, day: day})
+        console.log 'inserting'
+      # get the time from mite and save it. when there is no entry in the db, it will be created (hence upsert not update)   
+      Meteor.call "getMiteTimeByDay", localStorage['apiKey'], localStorage['miteHost'], day
+      start.setDate(start.getDate() + 1)
 
 # Template Settings
   # Head
@@ -72,7 +64,7 @@ if Meteor.isClient
       Session.set('year',parseInt(Session.get('year')) + 1 )
     else if event.target.id == 'lastyear'
       Session.set('year',parseInt(Session.get('year')) - 1 )
-    Meteor.call "fillInTargetTime", Session.get('year')
+    updateAllTimes()
 
 if Meteor.isServer
   Times = new Meteor.Collection("times")
@@ -84,29 +76,39 @@ if Meteor.isServer
         params:
           api_key: key
       )
-    # addTargetTime: (date) ->
-    #   share.getTargetTime(date)
-    getMiteTimeByDay: (key, host, date, userId) ->
-        url = "https://#{host}.mite.yo.lk/time_entries.json"
-        Meteor.http.call('GET', url, 
-          params: 
-            api_key: key, 
-            at: date, 
-            user_id: userId, 
-            group_by: 'day'
-        )
+
+    addTargetTime: (date) ->
+      share.getTargetTime(date)
+
+    getMiteTimeByDay: (key, host, day) ->
+          url = "https://#{host}.mite.yo.lk/time_entries.json"
+          result = Meteor.http.call('GET', url, 
+            params: 
+              api_key: key, 
+              at: day.date.yyyymmdd(), 
+              user_id: day.user_id, 
+              group_by: 'day'
+          )
+          # update the day entry with the ist time
+          if result.data.length > 0
+            day.ist = result.data[0].time_entry_group.minutes * 60
+          # else if new Date() >= day.date
+          #   day.ist = 0
+          Times.update({date: day.date, user_id: day.user_id},{$set: {day: day}})
+          console.log "updating #{day.date}"          
+        
     # fillInTargetTime: (year = new Date().getFullYear(), force = false) ->
     #   console.log "going for #{year}"
     #   start = new Date(year, 0, 1)
     #   end = new Date(year,11,31)
-    #   if targetTimes.find(y: year).count() < 365 || force == true
+    #   if Times.find(y: year).count() < 365 || force == true
     #     while start <= end
     #       targetMin = Meteor.call "addTargetTime", start     
-    #       if targetTimes.find({date: start}).count() == 0
-    #           targetTimes.insert({d: start.getDate(), m: start.getMonth(), y: year, date: start, soll: targetMin})
+    #       if Times.find({date: start}).count() == 0
+    #           Times.insert({d: start.getDate(), m: start.getMonth(), y: year, date: start, soll: targetMin})
     #           console.log "writing #{start} = #{targetMin}"
     #       else
-    #         targetTimes.update(date: start, {$set: {d: start.getDate(), m: start.getMonth(), y: year, date: start, soll: targetMin}})
+    #         Times.update(date: start, {$set: {d: start.getDate(), m: start.getMonth(), y: year, date: start, soll: targetMin}})
     #         console.log "updating #{start} = #{targetMin}"
     #       start.setDate(start.getDate() + 1)
     
