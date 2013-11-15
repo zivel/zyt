@@ -46,6 +46,7 @@ Date.prototype.yyyymmdd = ->
   "#{yyyy}-#{if mm[1] then mm else "0"+mm[0]}-#{if dd[1] then dd else "0"+dd[0]}"
 
 share.getTargetTime = (d = new Date()) ->
+  tzg = if Session.get('tzg') then Session.get('tzg') else 100
   freeDays = ['1.1', '2.1', '1.5', '1.8', '25.12', '26.12']
   halfDays = []
   es = easterSunday(d.getFullYear())
@@ -61,6 +62,6 @@ share.getTargetTime = (d = new Date()) ->
   else if d.ddmm() in freeDays
     return 0
   else if d.ddmm() in halfDays
-    42*60*60/5/2 
+    (42*60*60/5/2)/100*tzg
   else
-    42*60*60/5
+    (42*60*60/5)/100*tzg

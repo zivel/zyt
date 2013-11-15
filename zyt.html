@@ -107,17 +107,7 @@
 					<li class="lastmonth">{{this}}</li>
 				{{/each}}
 				{{#each this.dates}}
-					<li class="currentmonth">
-						<span>{{day}}</span>
-						<p>
-						<span class="soll">8.24</span>
-						<span class="ist">
-							{{miteTime}}
-						</span>
-						</ br>
-						<span class="total">13d 0.8h<span>
-						</p>
-					</li>
+					{{> day}}
 				{{/each}}
 				{{#each this.days_after}}
 					<li class="nextmonth">{{this}}</li>
@@ -142,4 +132,16 @@
 
 		{{/each}}
 	</div>
+</template>
+
+<template name="day">
+  <li class="currentmonth">
+    <span>{{dayNr}}</span>
+    <i class="icon-white icon-info-sign pull-right" data-placement="top" data-html="true" data-content="this is some text<br>and some more" title="Details for Day # {{dayNr}}"></i>
+    <p>
+      <span class="total {{diffColor diffTime}}">{{diffTime}}<span>
+      <span class="soll">{{sollZeit}}</span>
+      <span class="ist">{{miteTime}}</span>
+    </p>
+  </li>
 </template>

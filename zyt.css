@@ -15,16 +15,16 @@ div.a.right {float:right;}
 /*
  * Day styles
  -------------------------*/
-body {background-color: #FFFFCC}
+body {background-color: #ECE5CE}
 
 
 div.calendar {color: white;font-family: monospace;}
 ol.month {display: block; float:left;}
 /* days */
-ol.month li	{width:60px;height:60px;float:left;margin:1px; padding:2px;overflow:hidden;background-color: #707d48;border-radius: 6px}
+ol.month li	{width:60px;height:60px;float:left;margin:1px; padding:2px;overflow:hidden;background-color: #E08E79;border-radius: 6px}
 
 ol.month li.monthtitle {width:438px;height:30px;text-align:center; font-size: 50px;
-	margin:2px; padding:10px;background-color: #877626; border-radius: 12px;}
+	margin:2px; padding:10px;background-color: #774F38; border-radius: 12px;}
 ol.month li:nth-child(2),
 ol.month li:nth-child(9),
 ol.month li:nth-child(16),
@@ -33,8 +33,11 @@ ol.month li:nth-child(30),
 ol.month li:nth-child(37),
 ol.month li:nth-child(44) {clear:left;} 
 
-ol.month li.emptyday {background-color: #FFFFCC}
-ol.month li.daystitle {background-color: #d0b712; height:16px; text-align: center;}
+ol.month li.emptyday {background-color: #ECE5CE}
+/* mo di mi ... */
+ol.month li.daystitle {background-color: #774F38; height:16px; text-align: center;}
+
+/* mark color #C5E0DC */
 
 
 
@@ -49,8 +52,12 @@ li ol li     {font-size:.7em;display:block;height:auto;width:auto; background: n
 				margin:0;padding:.2em 0;float:none;}
 */
 /*
- * Inactive months
+ * Inactive days
  -------------------------*/
 ol.month li.currentmonth {}
 ol.month li.lastmonth,
-ol.month li.nextmonth { background-color: #d1d7b1;}
+ol.month li.nextmonth { background-color: #F1D4AF;}
+
+/* popover */
+.popover {color: #774F38;}
+
