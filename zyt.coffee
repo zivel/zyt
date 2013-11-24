@@ -1,6 +1,7 @@
 if Meteor.isClient
   Times = new Meteor.Collection("times")
 
+  Bla = new Meteor.Collection('bla')
   if !Session.get('year')
     Session.set('year', parseInt((new Date).getFullYear()))
 
@@ -101,8 +102,8 @@ if Meteor.isClient
     else
       "text-error"
 
-  Template.day.rendered = ->
-    $('.icon-info-sign').popover()
+  # Template.day.rendered = ->
+  #   $('.icon-info-sign').popover()
 
   # Calendar()
   

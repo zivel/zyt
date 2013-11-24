@@ -39,7 +39,7 @@
   		</a>
 		<div id="settings" class="collapse in">
 	{{/if}}
-	<form class="form-inline" action="POST">
+	<form class="form-indivne" action="POST">
     	<fieldset>
         	<label>
        			Mite API-Key:
@@ -79,54 +79,54 @@
 		<div class="calendar">
 		{{#each months}}
 			<ol class="month">
-				<li class="monthtitle">
+				<div class="monthtitle">
 				<span>{{this.name}}</span>
-				</li>
-				<li class="daystitle">
+				</div>
+				<div class="daystitle">
 			    	MO
-			    </li>	
-				<li class="daystitle">
+			    </div>	
+				<div class="daystitle">
 			    	DI
-			    </li>	
-				<li class="daystitle">
+			    </div>	
+				<div class="daystitle">
 			    	MI
-			    </li>	
-				<li class="daystitle">
+			    </div>	
+				<div class="daystitle">
 			    	DO
-			    </li>	
-				<li class="daystitle">
+			    </div>	
+				<div class="daystitle">
 			    	FR
-			    </li>	
-				<li class="daystitle">
+			    </div>	
+				<div class="daystitle">
 			    	SA
-			    </li>	
-				<li class="daystitle">
+			    </div>	
+				<div class="daystitle">
 			    	SO
-			    </li>	
+			    </div>	
 			    {{#each this.days_before}}
-					<li class="lastmonth">{{this}}</li>
+					<div class="lastmonth">{{this}}</div>
 				{{/each}}
 				{{#each this.dates}}
 					{{> day}}
 				{{/each}}
 				{{#each this.days_after}}
-					<li class="nextmonth">{{this}}</li>
+					<div class="nextmonth">{{this}}</div>
 				{{/each}}
-				{{#if this.empty_line}}
-				<li class="emptyday">
-			    </li>	
-				<li class="emptyday">
-			    </li>	
-				<li class="emptyday">
-			    </li>	
-				<li class="emptyday">
-			    </li>	
-				<li class="emptyday">
-			    </li>	
-				<li class="emptyday">
-			    </li>	
-				<li class="emptyday">
-			    </li>
+				{{#if this.empty_divne}}
+				<div class="emptyday">
+			    </div>	
+				<div class="emptyday">
+			    </div>	
+				<div class="emptyday">
+			    </div>	
+				<div class="emptyday">
+			    </div>	
+				<div class="emptyday">
+			    </div>	
+				<div class="emptyday">
+			    </div>	
+				<div class="emptyday">
+			    </div>
 				{{/if}}
 			</ol>
 
@@ -135,13 +135,13 @@
 </template>
 
 <template name="day">
-  <li class="currentmonth">
+  <div class="currentmonth">
     <span>{{dayNr}}</span>
-    <i class="icon-white icon-info-sign pull-right" data-placement="top" data-html="true" data-content="this is some text<br>and some more" title="Details for Day # {{dayNr}}"></i>
+    <!-- <i class="icon-white icon-info-sign pull-right" data-placement="top" data-html="true" data-content="this is some text<br>and some more" title="Details for Day # {{dayNr}}"></i> -->
     <p>
       <span class="total {{diffColor diffTime}}">{{diffTime}}<span>
       <span class="soll">{{sollZeit}}</span>
       <span class="ist">{{miteTime}}</span>
     </p>
-  </li>
+  </div>
 </template>
